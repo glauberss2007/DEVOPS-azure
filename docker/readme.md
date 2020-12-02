@@ -95,14 +95,33 @@ Works!
 	Standaridized App Packing - MultiPlataform-Light-Weight & Isolation
 	
 - Step 09 - Learning Docker Images - Commands
-	See imges: docker images
-	Pull latest image to be available locally (not run): docker pull "aplicationName"
-	Check official images to use: docker search "aplicationName"
-	Check all images of a repository: docker history "imageLink ou SHA"
-	Details of an image: docker inspect "iamgeLink or SHA"	
-	Remove an image: docker image remove "Link oer SHA"
-		PS: no container must exist
-	Remove container from local machine: docker container rm "SHA" (requires docker stop "SHA")
+See imges: 	
+
+	docker images
+
+Pull latest image to be available locally (not run): 
+	
+	docker pull "aplicationName"
+	
+Check official images to use: 
+
+	docker search "aplicationName"
+	
+Check all images of a repository: 
+
+	docker history "imageLink ou SHA"
+	
+Details of an image: 
+
+	docker inspect "iamgeLink or SHA"	
+	
+Remove an image: 
+
+	docker image remove "Link oer SHA"
+		
+Remove container from local machine: 
+	
+	docker container rm "SHA"
 		
 - Step 10 - Learning Docker Containers - Commands
 similares:
@@ -190,10 +209,13 @@ Specifies the limits for CPUs and memory to be used by docker:
 	comando to login from host: docker login
 	check the repository name: dockerID/projectname
 	Push to remote hub: docker push dockerID/projectname:TAG
-	Example: docker push in28min/hello-world-rest-api:0.0.1.RELEASE
+	Example: 
+		
+		docker push in28min/hello-world-rest-api:0.0.1.RELEASE
 	
 - Step 15 - Building and Pushing Docker Image for Node JavaScript App
-	Ope the project on github (glauberss2007) using VS Code
+Open the project on github (glauberss2007) using VS Code
+	
 	FROM node:8.16.1-alpine #Base image
 	WORKDIR /app	#working directory
 	COPY . /app		#Cpy entire directory
@@ -204,10 +226,11 @@ Specifies the limits for CPUs and memory to be used by docker:
 	#ENTRYPOINT ["node", "index.js"]
 	#COPY package.json /app
 	
-	Go to directory with the files and execute: docker build -t ... . (same of the step 12.2)
+Go to directory with the files and execute: docker build -t ... . (same of the step 12.2)
 	
 - Step 16 - Building and Pushing Docker Image for Java Application
-	Creating an image of a spring boot app in java
+Creating an image of a spring boot app in java
+	
 	# Build a JAR File to run nin the image
 	FROM maven:3.6.3-jdk-8-slim AS stage1 #"stage1" is the name of the place to be copied
 	WORKDIR /home/app
@@ -220,11 +243,12 @@ Specifies the limits for CPUs and memory to be used by docker:
 	COPY --from=stage1 /home/app/target/hello-world-java.jar hello-world-java.jar #copy from the "stage1" or name seted above
 	ENTRYPOINT ["sh", "-c", "java -jar /hello-world-java.jar"]
 	
-	Go to directory with the files and execute: docker build -t ... . (same of the step 12.2)
-	This will take some mor time
+Go to directory with the files and execute: docker build -t ... . (same of the step 12.2)
+This will take some mor time
 
 - Step 17 - Building Efficient Docker Images - Improving Layer Caching
-	Using the example of nojs docker file
+Using the example of nojs docker file
+
 		FROM node:8.16.1-alpine
 		WORKDIR /app
 		COPY pacjage.json /app		#copy only the files with the changes instead of all . for further version
@@ -232,9 +256,8 @@ Specifies the limits for CPUs and memory to be used by docker:
 		EXPOSE 5000
 		CMD node index.js
 
-	Improving speed to push/image generator by using cached for further tags on an image
-	
-	Teh same works for others projects
+Improving speed to push/image generator by using cached for further tags on an image
+Teh same works for others projects
 		
 - Step 18 - Understanding ENTRYPOINT vs CMD
 	Check a use of CMD(dockerfile) comand on docker projects using CMD (return the ping): 
@@ -260,30 +283,45 @@ Specifies the limits for CPUs and memory to be used by docker:
 - Step 21 - Running Microservices as Docker Containers
 	Concurrency Exchange and Concurrency Conversion
 		Microservice 1 -> consult other microservice using an Environment_Variable -> Microservice 2
-			
-		Deploy CC->CE example: docker run -d -p 8000:8000 --name=currency-exchange in28min/currency-exchange:0.0.1-RELEASE
-							   docker run -d -p 8000:8000 --name=currency-conversion in28min/currency-conversion:0.0.1-RELEASE
-		
-		Erro: CC cant conect to CE
+Deploy CC->CE example: 
+
+	docker run -d -p 8000:8000 --name=currency-exchange in28min/currency-exchange:0.0.1-RELEASE
+	docker run -d -p 8000:8000 --name=currency-conversion in28min/currency-conversion:0.0.1-RELEASE
+Erro: CC cant conect to CE
 		
 - Step 22 - Using Docker Link to Connect Microservices
-		List docker networks: docker network ls
-		Inspect network: docker network inspect bridge
+List docker networks: 
+
+	docker network ls
+
+Inspect network: 
+
+	docker network inspect bridge
 		
-		By default bridges do not comunicate with each other
-		Create a conect link among docker in a bridge(origem->target): docker run -d -p 8100:8100 --env CURRENCY_EXCHANGE_SERVICE_HOST=httpd://currency-exchange --name=currency-conversion --link currency-exchange in28min/currency-conversion:0.0.1-RELEASE 
+By default bridges do not comunicate with each other
+Create a conect link among docker in a bridge(origem->target): 
+		
+		docker run -d -p 8100:8100 --env CURRENCY_EXCHANGE_SERVICE_HOST=httpd://currency-exchange --name=currency-conversion --link currency-exchange in28min/currency-conversion:0.0.1-RELEASE 
 		
 - Step 23 - Using Custom Networking to Connect Microservices
 	Configuring container with host network (hosts driver only comuniucate with linux plataform)
-	Alternative creating a custom network: docker network create "currency-network"(name)
-	Start or restart the dockers adding the new network: docker run -d -p 8000:8000 --name=currency-conversion --network=currency-network in28min/currency-conversion:0.0.1-RELEASE
+	Alternative creating a custom network: 
+	
+		docker network create "currency-network"(name)
+	Start or restart the dockers adding the new network: 
+	
+		docker run -d -p 8000:8000 --name=currency-conversion --network=currency-network in28min/currency-conversion:0.0.1-RELEASE
 		
 - Step 24 - Using Docker Compose to Simplify Microservices Launch
 	Make easier network configuration of containers:Install docker composer
-	check version of composer: docker-compose --version
+	check version of composer: 
+	
+		docker-compose --version
+	
 	Start composer at the same folder of "docker-compose.yml" file: docker-compose up
 	Use an yml file to create a docker compose:
 	Step 23 configuration example:
+		
 		version: '3.7'
 		services:
 		  currency-exchange:
@@ -311,110 +349,111 @@ networks:
   currency-compose-network:
 	
 - Step 25 - Understanding Docker Compose further
-	run docker compose on detached mode: docker-compose up -d
-	stop docker compose: docker-compose down
-	Show config: docker-compose config
-	Show images: docker-compose ...other comands similaries to docker
+	run docker compose on detached mode: 
+		
+		docker-compose up -d
+	stop docker compose: 
+		
+		docker-compose down
+	Show config: 
+		
+		docker-compose config
+	Show images: 
+		docker-compose 
+		
+...other comands similaries to docker
 
 # Commands used
 
-docker --version
-docker run -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
-docker run -p 5000:5000 in28min/hello-world-java:0.0.1.RELEASE
-docker run -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
-docker run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
-docker run -d -p 5001:5000 in28min/hello-world-python:0.0.1.RELEASE
-docker logs 04e52ff9270f5810eefe1f77222852dc1461c22440d4ecd6228b5c38f09d838e
-docker logs c2ba
-docker images
-docker container ls
-docker container ls -a
-docker container stop f708b7ee1a8b
-docker run -d -p 5001:8080 in28min/hello-world-rest-api:0.0.1.RELEASE
-docker pull mysql
-docker search mysql
-docker image history in28min/hello-world-java:0.0.1.RELEASE
-docker image history 100229ba687e
-docker image inspect 100229ba687e
-docker image remove mysql
-docker image remove in28min/hello-world-java:0.0.1.RELEASE
-docker container rm 3e657ae9bd16
-docker container ls -a
-docker container pause 832
-docker container unpause 832
-docker container stop 832
-docker container inspect ff521fa58db3
-docker container prune
-docker system
-docker system df
-docker system info
-docker system prune -a
-docker top 9009722eac4d
-docker stats 9009722eac4d
-docker container run -p 5000:5000 -d -m 512m in28min/hello-world-java:0.0.1.RELEASE
-docker container run -p 5000:5000 -d -m 512m --cpu-quota=50000  in28min/hello-world-java:0.0.1.RELEASE
-docker system events
+	docker --version
+	docker run -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
+	docker run -p 5000:5000 in28min/hello-world-java:0.0.1.RELEASE
+	docker run -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+	docker run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+	docker run -d -p 5001:5000 in28min/hello-world-python:0.0.1.RELEASE
+	docker logs 04e52ff9270f5810eefe1f77222852dc1461c22440d4ecd6228b5c38f09d838e
+	docker logs c2ba
+	docker images
+	docker container ls
+	docker container ls -a
+	docker container stop f708b7ee1a8b
+	docker run -d -p 5001:8080 in28min/hello-world-rest-api:0.0.1.RELEASE
+	docker pull mysql
+	docker search mysql
+	docker image history in28min/hello-world-java:0.0.1.RELEASE
+	docker image history 100229ba687e
+	docker image inspect 100229ba687e
+	docker image remove mysql
+	docker image remove in28min/hello-world-java:0.0.1.RELEASE
+	docker container rm 3e657ae9bd16
+	docker container ls -a
+	docker container pause 832
+	docker container unpause 832
+	docker container stop 832
+	docker container inspect ff521fa58db3
+	docker container prune
+	docker system
+	docker system df
+	docker system info
+	docker system prune -a
+	docker top 9009722eac4d
+	docker stats 9009722eac4d
+	docker container run -p 5000:5000 -d -m 512m in28min/hello-world-java:0.0.1.RELEASE
+	docker container run -p 5000:5000 -d -m 512m --cpu-quota=50000  in28min/hello-world-java:0.0.1.RELEASE
+	docker system events
 
-docker container stats 4faca1ea914e3e4587d1d790948ec6cb8fa34f26e900c12632fd64d4722fd59a
-docker stats 42f170966ce613d2a16d7404495af7b3295e01aeb9142e1fa1762bbdc581f502
+	docker container stats 4faca1ea914e3e4587d1d790948ec6cb8fa34f26e900c12632fd64d4722fd59a
+	docker stats 42f170966ce613d2a16d7404495af7b3295e01aeb9142e1fa1762bbdc581f502
 
-cd /in28Minutes/git/devops-master-class/projects/hello-world/hello-world-python 
-docker build -t in28min/hello-world-python:0.0.2.RELEASE . 
-docker run -p 5000:5000 -d in28min/hello-world-python:0.0.2.RELEASE
-docker history e66dc383f7a0
-docker push in28min/hello-world-python:0.0.2.RELEASE
+	cd /in28Minutes/git/devops-master-class/projects/hello-world/hello-world-python 
+	docker build -t in28min/hello-world-python:0.0.2.RELEASE . 
+	docker run -p 5000:5000 -d in28min/hello-world-python:0.0.2.RELEASE
+	docker history e66dc383f7a0
+	docker push in28min/hello-world-python:0.0.2.RELEASE
 
-cd ../hello-world-nodejs/
-docker build -t in28min/hello-world-nodejs:0.0.2.RELEASE . 
-docker container run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.2.RELEASE
-docker push in28min/hello-world-nodejs:0.0.2.RELEASE
+	cd ../hello-world-nodejs/
+	docker build -t in28min/hello-world-nodejs:0.0.2.RELEASE . 
+	docker container run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.2.RELEASE
+	docker push in28min/hello-world-nodejs:0.0.2.RELEASE
 
-cd ../hello-world-java/
-docker build -t in28min/hello-world-java:0.0.2.RELEASE . 
-docker run -d -p 5000:5000 in28min/hello-world-java:0.0.2.RELEASE
-docker push in28min/hello-world-java:0.0.2.RELEASE
+	cd ../hello-world-java/
+	docker build -t in28min/hello-world-java:0.0.2.RELEASE . 
+	docker run -d -p 5000:5000 in28min/hello-world-java:0.0.2.RELEASE
+	docker push in28min/hello-world-java:0.0.2.RELEASE
 
-docker run -d -p 5001:5000 in28min/hello-world-nodejs:0.0.3.RELEASE ping google.com
-
-
-docker run -d -p 8000:8000 --name=currency-exchange in28min/currency-exchange:0.0.1-RELEASE
-docker run -d -p 8100:8100 --name=currency-conversion in28min/currency-conversion:0.0.1-RELEASE
-
-docker network ls
-docker network inspect bridge
-
-docker run -d -p 8100:8100 --env CURRENCY_EXCHANGE_SERVICE_HOST=http://currency-exchange --name=currency-conversion --link currency-exchange in28min/currency-conversion:0.0.1-RELEASE
-
-docker network create currency-network
-docker container stop currency-exchange
-docker container stop currency-conversion
-docker run -d -p 8000:8000 --name=currency-exchange --network=currency-network in28min/currency-exchange:0.0.1-RELEASE
-docker run -d -p 8100:8100 --env CURRENCY_EXCHANGE_SERVICE_HOST=http://currency-exchange --name=currency-conversion --network=currency-network in28min/currency-conversion:0.0.1-RELEASE
-
-docker-compose --version
-cd ../../microservices/
-docker-compose up
-docker-compose up -d
-docker container ls
-docker network ls
-docker network inspect microservices_currency-compose-network
-docker-compose down
-docker container ls -a
-docker system prune -a
-docker-compose config
-docker-compose images
-docker-compose ps
-docker-compose top
-
-```
-docker build -t in28min/hello-world-java:0.0.1.RELEASE .
-docker push in28min/hello-world-java:0.0.1.RELEASE
-
-docker build -t in28min/hello-world-python:0.0.1.RELEASE .
-docker push in28min/hello-world-python:0.0.1.RELEASE
-
-docker build -t in28min/hello-world-nodejs:0.0.1.RELEASE .
-docker push in28min/hello-world-nodejs:0.0.1.RELEASE
-```
+	docker run -d -p 5001:5000 in28min/hello-world-nodejs:0.0.3.RELEASE ping google.com
 
 
+	docker run -d -p 8000:8000 --name=currency-exchange in28min/currency-exchange:0.0.1-RELEASE
+	docker run -d -p 8100:8100 --name=currency-conversion in28min/currency-conversion:0.0.1-RELEASE
+
+	docker network ls
+	docker network inspect bridge
+
+	docker run -d -p 8100:8100 --env CURRENCY_EXCHANGE_SERVICE_HOST=http://currency-exchange --name=currency-conversion --link currency-exchange in28min/currency-		conversion:0.0.1-RELEASE
+
+	docker network create currency-network
+	docker container stop currency-exchange
+	docker container stop currency-conversion
+	docker run -d -p 8000:8000 --name=currency-exchange --network=currency-network in28min/currency-exchange:0.0.1-RELEASE
+	docker run -d -p 8100:8100 --env CURRENCY_EXCHANGE_SERVICE_HOST=http://currency-exchange --name=currency-conversion --network=currency-network in28min/currency-conversion:0.0.1-RELEASE
+	docker-compose --version
+	cd ../../microservices/
+	docker-compose up
+	docker-compose up -d
+	docker container ls
+	docker network ls
+	docker network inspect microservices_currency-compose-network
+	docker-compose down
+	docker container ls -a
+	docker system prune -a
+	docker-compose config
+	docker-compose images
+	docker-compose ps
+	docker-compose top
+	docker build -t in28min/hello-world-java:0.0.1.RELEASE .
+	docker push in28min/hello-world-java:0.0.1.RELEASE
+	docker build -t in28min/hello-world-python:0.0.1.RELEASE .
+	docker push in28min/hello-world-python:0.0.1.RELEASE
+	docker build -t in28min/hello-world-nodejs:0.0.1.RELEASE .
+	docker push in28min/hello-world-nodejs:0.0.1.RELEASE
