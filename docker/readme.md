@@ -1,21 +1,32 @@
-# Docker
-
-## This is an example of a Project
+# Docker this is an example of a Project
 - Hello World - Java, JavaScript and Python
 - 2 Microservices - Currency Exchange and Currency Conversion
 
 ## Steps
 - Step 01 - Docker and DevOps - Installation and Introduction
-You can install docker on Windows, Linux or MAC (https://docs.docker.com).
-The Virtualization mus be compatible and enabled.
+You can install docker on Windows, Linux or MAC (https://docs.docker.com). The Virtualization feature must be compatible and enabled.
 
 - Step 02 - Your First Docker Usecase
-For this example I install on an oracle linux on Oracle Cloud Plataform alweys free
-(https://medium.com/oracledevs/run-always-free-docker-container-on-oracle-cloud-infrastructure-c88e36b65610.
-	running python app:	sudo docker run -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
-	running java app: sudo docker run -p 5000:5000 in28min/hello-world-java:0.0.1.RELEASE
-	running nodejs app: sudo docker run -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
-	sudo docker ps (list)
+For this example is used an oracle linux SO on Oracle Cloud Plataform. 
+Always free serve on cloud: "https://medium.com/oracledevs/run-always-free-docker-container-on-oracle-cloud-infrastructure-c88e36b65610".
+running python app:	
+	
+	sudo docker run -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
+
+running java app: 
+
+	sudo docker run -p 5000:5000 in28min/hello-world-java:0.0.1.RELEASE
+	
+running nodejs app:
+	
+	sudo docker run -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+	
+list containers:
+
+	sudo docker ps
+	
+stop container:
+
 	sudo docker stop "dockerid"
 	
 - Step 03 - Important Docker Concepts - Registry, Repository, Tag, Image and Container
@@ -27,35 +38,58 @@ For this example I install on an oracle linux on Oracle Cloud Plataform alweys f
 	Runing image is called a docker
 	
 - Step 04 - Playing with Docker Images - Java, JavaScript and Python
-	running multiples container in different ports:
+running multiples container in different ports:
+
 	sudo docker run -p 5000:5000 in28min/hello-world-python:0.0.1.RELEASE
 	sudo docker run -p 5001:5000 in28min/hello-world-java:0.0.1.RELEASE
 	sudo docker run -p 5002:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
-	PS: Release the firewall on oracle vnc and use three linux terminal for each command.
+	
+PS: Release the firewall on oracle vnc and use three linux terminal for each command or detached parameter
 	
 - Step 05 - Playing with Docker - Detached Mode and Logs
-	Detached mode (on background):
+Detached mode (on background):
+
 	sudo docker run -d -p 5002:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
 	
-	Docker log (using the SHA): docker logs "33b785d80b463fd89308853846c554f3a818941c0450e9281d0fa2b0bc6b1968"
-	Real time log: docker logs -f "33b785d80b463fd89308853846c554f3a818941c0450e9281d0fa2b0bc6b1968"
+Docker log (using the SHA): 
+	
+	docker logs "33b785d80b463fd89308853846c554f3a818941c0450e9281d0fa2b0bc6b1968"
+	
+Real time log: 
+	
+	docker logs -f "33b785d80b463fd89308853846c554f3a818941c0450e9281d0fa2b0bc6b1968"
 	
 - Step 06 - Playing with Docker Images and Containers
-	See images(all images): docker images
-	See containers(only runings): docker container ls
-	See containers history: docker container ls -a
-	Stop a cotainer: stop container "SHA"
+See images(all images):
+
+	docker images
+
+See containers(only runings): 
+
+	docker container ls
+
+See containers history: 
+
+	docker container ls -a
+
+Stop a cotainer: 
+	
+	stop container "SHA"
 
 - Step 07 - Understanding Docker Architecture - Docker Client, Docker Engine
-	Docker client (request)> Docker daemon (checks local registry and hub)> (Containers, local images, image registry)
-	Example: 
+Docker client (request)> Docker daemon (checks local registry and hub)> (Containers, local images, image registry)
+Example: 
+
 	sudo docker run -d -p 5003:5000 in28min/hello-world-rest-api:0.0.1.RELEASE (remote)
-	Not Works!
-	docker log show that conianer is running on 8080
-	docker ps > docker stop 
-	sudo docker run -d -p 5003:8080 in28min/hello-world-rest-api:0.0.1.RELEASE (local)
+	
+Not Works!
+docker log show that conianer is running on 8080
+docker ps > docker stop 
+	
+	sudo docker run -d -p 5003:8080 in28min/hello-world-rest-api:0.0.1.RELEASE
 	sudo docker run -d -p 9001:9001 r/etherpad/etherpad:latest
-	Works!
+
+Works!
 		
 - Step 08 - Understanding Docker Popularity - My 3 Top Reasons
 	Standaridized App Packing - MultiPlataform-Light-Weight & Isolation
@@ -71,24 +105,65 @@ For this example I install on an oracle linux on Oracle Cloud Plataform alweys f
 	Remove container from local machine: docker container rm "SHA" (requires docker stop "SHA")
 		
 - Step 10 - Learning Docker Containers - Commands
-	sudo docker run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE (short comand)
-	or sudo docker container run -d -p 5003:8080 in28min/hello-world-rest-api:0.0.1.RELEASE (full comand)
-	comand to list historical booted/exited containers: docker container ls -a
-	Pause (freeze) a containner: docker container pause "SHA"
-	Unpause the conainer: docker container unpause "SHA"
-	Stop the conainer (poweroff - safe): docker container stop "SHA"
-	Kill (force the shutdows - not safe) a container: docker container kill "SHA
-	Logs check: docker container logs "SHA"
-	List all details of a docker: docker container inspect "SHA"
-	Remove all locally images of stoped containers: docker container prune
+similares:
+
+	sudo docker run -d -p 5000:5000 in28min/hello-world-nodejs:0.0.1.RELEASE
+	sudo docker container run -d -p 5003:8080 in28min/hello-world-rest-api:0.0.1.RELEASE (full comand)
+	
+comand to list historical booted/exited containers: 
+
+	docker container ls -a
+
+Pause (freeze) a containner: 
+	
+	docker container pause "SHA"
+
+Unpause the conainer: 
+
+	docker container unpause "SHA"
+
+Stop the conainer (poweroff - safe): 
+
+	docker container stop "SHA"
+
+Kill (force the shutdows - not safe) a container: 
+	
+	docker container kill "SHA
+
+Logs check: 	
+	
+	docker container logs "SHA"
+
+List all details of a docker: 
+	
+	docker container inspect "SHA"
+	
+Remove all locally images of stoped containers: 
+	
+	docker container prune
 	
 - Step 11 - Learning Docker Commands - system and stats
-	List system parameters: docker system
-	Check container disk usage: docker system df
-	Evnts check: docker system events
-	Remove all stopd conainers, networks not used, images not used, cahce: docker system prune -a
-	status detailes: docker container stats "SHA"
-	Specifies the limits for CPUs and memory to be used by docker:
+List system parameters: 
+
+	docker system
+Check container disk usage: 
+	
+	docker system df
+
+Evnts check: 
+
+	docker system events
+
+Remove all stopd conainers, networks not used, images not used, cahce: 
+	
+	docker system prune -a
+	
+status detailes: 
+	
+	docker container stats "SHA"
+
+Specifies the limits for CPUs and memory to be used by docker:
+	
 	sudo docker run -d -p 5003:8080 -m 512m --cpu-quota=50000 in28min/hello-world-rest-api:0.0.1.RELEASE
 	
 - Step 12.1 - Importing Docker Project into Visual Studio Code
