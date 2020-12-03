@@ -51,7 +51,7 @@ The release will be changed after some feel seconds (20s)
 - Step 04 - Review Kubernetes Cluster and Learn Few Fun Facts about Kubernetes
 Conect to kubernets using cloud shell and create a kubectl config using cloud shell terminal (it depends of the cluster created)
   
-    oci ce cluster create-kubeconfig --cluster-id ocid1.cluster.oc1.sa-saopaulo-1.aaaaaaaaae2timzvgmywinzwmq4gmnjthbqwknlfgzrdqzjqgc4wmnjtmizd --file $HOME/.kube/config --region sa-saopaulo-1 --token-version 2.0.0 
+    oci ce cluster create-kubeconfig --cluster-id ocid1.cluster.oc1.sa-saopaulo-1.aaaaaaaaae2timzvgmywinzwmq4gmnjthbqwknlfgzrdqzjqgc4wmnjtmizd --file $HOME/.kube/config --       region sa-saopaulo-1 --token-version 2.0.0 
     
     kubectl version
   
