@@ -1,15 +1,81 @@
 # Kubernetes
-
 ## Projects
 - Hello World REST API
 - 2 Microservices - Currency Exchange and Currency Conversion
-
+    
 ## Steps
-- Step 01 - Getting Started with Docker, Kubernetes and Google Kubernetes Engine
-- Step 02 - Creating Google Cloud Account
-- Step 03 - Creating Kubernetes Cluster with Google Kubernete Engine (GKE)
+- Step 01 - Getting Started with Docker, Kubernetes and Google Kubernetes Engine    
+run an application on kubernets: 
+  
+    kubectl create deployment hello-world-rest-api --image=in28min/hello-world-rest-api:0.0.1.RELEASE
+    kubectl expose deployment hello-world-rest-api --type=LoadBalancer --port=8080
+   
+creating multiple instances: 
+  
+     kubectl scale deployment herllo-wordl-rest=api -- replicas=3
+     
+deleting an instance: 
+  
+    kubectl delete pod hello-world-rest-api-"SHA"
+    
+kubernets keep 3 instance running even one down, recriating another and keep app online all the time
+
+controling resources for an instance based on the load: 
+
+    kubectl autoscale deployment hello-wordl=rest-api --max=10 --cpu-percent=70
+    
+configuring a new release in X seconds without downtime:
+    
+    kubectl edit deployment hello-world-rest-api
+insert line:
+
+    specs:
+    ...
+    minReadySeconds: 20
+    ...
+    
+starting the new release :
+    
+    kubectl set image deployment hello-world-rest-api --image=in28min/hello-world-rest-api:0.0.2.RELEASE
+    
+The release will be changed after some feel seconds (20s)
+  
+- Step 02 - Creating Google/Oracle/Azure/AWS Cloud Account
+  Cluster is a combinations of nodes
+  Manage cluster: master nodes
+  Run aplications/serviços: worker nodes
+  
+- Step 03 - Creating Kubernetes Cluster with Oracle Cloud Kubernete Engine
+  Create an standard cluster on any cloud porvider
+  
 - Step 04 - Review Kubernetes Cluster and Learn Few Fun Facts about Kubernetes
+Conect to kubernets using cloud shell and create a kubectl config using cloud shell terminal (it depends of the cluster created)
+  
+    oci ce cluster create-kubeconfig --cluster-id ocid1.cluster.oc1.sa-saopaulo-1.aaaaaaaaae2timzvgmywinzwmq4gmnjthbqwknlfgzrdqzjqgc4wmnjtmizd --file $HOME/.kube/config --region sa-saopaulo-1 --token-version 2.0.0 
+    
+    kubectl version
+  
+ Oracle cloud shell documentation: 
+    
+    https://docs.cloud.oracle.com/en-us/iaas/Content/API/Concepts/cloudshellintro.htm  
+    
 - Step 05 - Deploy Your First Spring Boot Application to Kubernetes Cluster
+deploy an API from docker hub repository:
+
+    kubectl create deployment hello-world-rest-api --image=in28min/hello-world-rest-api:1.0.0.RELEASE
+    
+expose to the outside attached in a load balancer:
+    
+    kubectl expose deployment hello-world-rest-api --type=LoadBalancer --port=8080 
+    
+list deployments:
+    
+    kubectl get deployments
+
+confirm address using: 
+
+    kubectl get pods -o wide
+      
 - Step 06 - Quick Look at Kubernetes Concepts - Pods, Replica Sets and Deployment
 - Step 07 - Understanding Pods in Kubernetes
 - Step 08 - Understanding ReplicaSets in Kubernetes
