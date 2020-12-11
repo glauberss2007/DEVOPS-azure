@@ -77,9 +77,71 @@ confirm address using:
     kubectl get pods -o wide
       
 - Step 06 - Quick Look at Kubernetes Concepts - Pods, Replica Sets and Deployment
+Running pods information:    
+    
+    kubectl get pods
+    kubectl get pod
+    kubectl get service
+    kubectl get deployment
+    
+ Container Orchestration > manages more them 1000 instances with 1000 microservices...
+ Features > Declarative, easy scalling, load balancing, self healing, zero downtime.
+ Cloud neural > Standardized PLataform on any Infrastructure
+    
 - Step 07 - Understanding Pods in Kubernetes
+PODs are the deployments unit in kubernets, so there is no container  withou a po
+Detailed pod info:
+
+    kubectl get pods -o wide
+    
+A pod has an IP and can include more then one containers
+Explanation about pod:
+
+  kubectl explain pods
+
+Detailed of a pod
+
+    kubectl describe pod "POD_NAME"]
+    
+PS: It is recomended to dele an cluster that are no in use
+Show replications:
+    
+    kubectl get replicasets
+    
+Continues UP pods:
+    
+    kubectl get pods -o wide
+    kubectl delete pods "POD_NAME"
+    kubectl get pods -o wide
+    
+Configure number of replicas:
+    
+    kubectl scale deployment nginx --replicas=3
+    
+Check internal log:
+    
+    kubectl get events
+    
+Sorted mode:
+
+    kubectl get events --sort-by=.metada.creationTimestamp
+    
+Explanations:
+
+    kubectl explain replicaset
+    
 - Step 08 - Understanding ReplicaSets in Kubernetes
+Zero Downtime
+
+replicaset information: 
+    
+    kubectl get rs
+    kubectl get rs -o wide
+    
+DUNNY_IMAGES do not afects the current runing pods
+
 - Step 09 - Understanding Deployment in Kubernetes
+
 - Step 10 - Quick Review of Kubernetes Concepts - Pods, Replica Sets and Deployment
 - Step 11 - Understanding Services in Kubernetes
 - Step 12 - Quick Review of GKE on Google Cloud Console 
