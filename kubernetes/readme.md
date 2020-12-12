@@ -195,12 +195,127 @@ Check ststaus of componenets envolved in master nod:
     
     Intaling "OCLI" on linux, mac or windows https://www.oracle.com/br/technical-resources/articles/cloudcomp/utilizando-oci-cli-p1.html
     
+    For OCLI you need to paste generated public key on console at USER_SETTINGS > API KEYS.
+    
 - Step 16 - Installing Kubectl 
 
-
+kubectl instalation https://kubernetes.io/docs/tasks/tools/install-kubectl/
+Check version:
+    
+    kubectl version
+    
+Use it in local machine.
+    
 - Step 17 - Understand Kubernetes Rollouts
+
+List rollout history available:
+    
+    kubectl rollout history deployment nginx
+
+Including a rollout image:
+
+    kubectl set image deployment nginx nginx=example/nginx:0.0.1.RELEASE --record=true
+    
+Returning to a previous one:    
+       
+    kubectl rollout undo deployment nginx --to-revision=1
+    
+It is possible to do a pos or previous deployment rollout.
+
+Check logs:
+    
+    get logs "POD_SHA"
+    
 - Step 18 - Generate Kubernetes YAML Configuration for Deployment and Service
+Kubernets is declarative, and can be used an YAML file
+
+Show yaml respective file from running deployment:
+
+    kubectl get deployment nginx -o yaml
+    
+Export an yaml respective file from running service:    
+
+    kubectl get service nginx -o yaml > service.yaml
+
+Exported yaml file can be opened in VS code or any text editor
+
+Applying changes using an yaml file:
+    
+    kubectl apply -f service.yaml
+    
+Creating PODS from begi using a simple yaml file:
+
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    metadata:
+      labels:
+        app: hello-world-rest-api
+      name: hello-world-rest-api
+      namespace: default
+    spec:
+      replicas: 2
+      selector:
+        matchLabels:
+          app: hello-world-rest-api
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app: hello-world-rest-api
+        spec:
+          containers:
+          - image: in28min/hello-world-rest-api:0.0.1.RELEASE
+            imagePullPolicy: IfNotPresent
+            name: hello-world-rest-api
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: hello-world-rest-api
+      name: hello-world-rest-api
+      namespace: default
+    spec:
+      ports:
+      - nodePort: 32208
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      selector:
+        app: hello-world-rest-api
+      sessionAffinity: None
+      type: LoadBalancer
+      
+List all deployments to get similar label (SELECTOR):
+
+    kubectl get all -o wide
+
+Removing all deployments and services using label:
+    
+    kubectl delete all -l "LABEL"
+
+Creating from yaml file:
+    
+    kubectl apply -f "xxx.yaml"
+    
+Watch and access the new environment created using an yaml file:
+
+    kubectl svc --watch
+    
+Check/Apply only the difference (update parameters) from a same service yaml:
+    
+    kubectl diff -f "xxx.yaml"
+    kubectl apply -f "xxx.yaml"
+
 - Step 19 - Understand and Improve Kubernetes YAML Configuration
+    
+
 - Step 20 - Using Kubernetes YAML Configuration to Create Resources
 - Step 21 - Understanding Kubernetes YAML Configuration - Labels and Selectors
 - Step 22 - Quick Fix to reduce release downtime with minReadySeconds
