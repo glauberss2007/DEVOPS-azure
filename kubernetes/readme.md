@@ -243,9 +243,54 @@ Applying changes using an yaml file:
     
     kubectl apply -f service.yaml
     
+- Step 19 - Understand and Improve Kubernetes YAML Configuration
+apiVersion -> Version o API
+    kind -> type
+    metadata -> metadata definitions
+    spec:
+      replicas: 2
+      selector: -> 
+        matchLabels:
+          app: hello-world-rest-api
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            app: hello-world-rest-api
+        spec: -> details of the POD that will be deployed
+          containers: - > Define container or containers
+          - image: in28min/hello-world-rest-api:0.0.1.RELEASE
+            imagePullPolicy: IfNotPresent
+            name: hello-world-rest-api
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+
+apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: hello-world-rest-api
+      name: hello-world-rest-api
+      namespace: default
+    spec:
+      ports:
+      - nodePort: 32208
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+      selector:
+        app: hello-world-rest-api -> Deployment selection
+      sessionAffinity: None
+      type: LoadBalancer
+    
+- Step 20 - Using Kubernetes YAML Configuration to Create Resources
 Creating PODS from begi using a simple yaml file:
 
-    apiVersion: extensions/v1beta1
+    apiVersion: apps/v1
     kind: Deployment
     metadata:
       labels:
@@ -313,14 +358,24 @@ Check/Apply only the difference (update parameters) from a same service yaml:
     kubectl diff -f "xxx.yaml"
     kubectl apply -f "xxx.yaml"
 
-- Step 19 - Understand and Improve Kubernetes YAML Configuration
-    
-
-- Step 20 - Using Kubernetes YAML Configuration to Create Resources
 - Step 21 - Understanding Kubernetes YAML Configuration - Labels and Selectors
+
 - Step 22 - Quick Fix to reduce release downtime with minReadySeconds
+Reduce downtime by specifing the parameter below on epec: of deployment.yaml:
+
+    minReadySeconds: "SECONDS" (30)
+    
 - Step 23 - Understanding Replica Sets in Depth - Using Kubernetes YAML Config
+Delete all deployments, services and replica sets using a common label:
+    
+    kubectl delete all -l app=hello-world-rest-api
+    
+Coment strategy parametes of yaml file becau replicaset do not hax strategy associated:
+   
+    kind: ReplicaSet
+   
 - Step 24 - Configure Multiple Kubernetes Deployments with One Service
+    
 - Step 25 - Playing with Kubernetes Commands - Top Node and Pod
 - Step 26 - Delete Hello World Deployments
 - Step 27 - Quick Introduction to Microservices - CE and CC
