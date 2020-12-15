@@ -375,8 +375,59 @@ Coment strategy parametes of yaml file becau replicaset do not hax strategy asso
     kind: ReplicaSet
    
 - Step 24 - Configure Multiple Kubernetes Deployments with One Service
+Configure multiple pods with difernte APIs for a single service (IP:port)
+
+Create deplyment environment:
+    
+    kubectl apply -f deployment.yaml
+    
+Delete deployments: 
+    
+    kubectl delete deployment hello-world-rest-api
+    
+Edit yaml as example in deployment_multiple.yaml and apply it:
+
+    kubectl apply -f deployment_multiple.yaml
+    
+use get all comand to confirm that there are 4 pods runing under one service (using the same external IP and port), 2 for API version 1 and 2 for API version 2
+It is possible to specifi all traffic to redirec to an specific service, using "version: xx" in "selector:" of "service" in .yaml file.
     
 - Step 25 - Playing with Kubernetes Commands - Top Node and Pod
+Display all pods names including namespaces
+    
+    kubectl get pods --all-namespaces
+    
+Display specifics pods
+
+    kubectl get pods --all-namespaces -l app=hello-world-rest-api
+    
+Display services:
+    
+    kubectl get services --all-namespaces -l 
+    
+Display sortin by type:
+
+    kubectl get services --all-namespaces --sort-by=.spec.type
+    
+PS: its possible to sort by any topic in .yaml file
+
+Cluster informations and logs:    
+    
+    kubectl cluster-info
+    
+Resource use display:
+
+    kubectl top node    
+    kubectl top pod
+    
+    
+    
+    
+
+    
+    
+
+
 - Step 26 - Delete Hello World Deployments
 - Step 27 - Quick Introduction to Microservices - CE and CC
 - Step 28 - Deploy Microservices to Kubernetes
