@@ -420,16 +420,19 @@ Resource use display:
     kubectl top node    
     kubectl top pod
     
-    
-    
-    
-
-    
-    
-
-
 - Step 26 - Delete Hello World Deployments
+
 - Step 27 - Quick Introduction to Microservices - CE and CC
+Overview regard microservices  present on ../projects/microservices  
+json file understand
+
+Create deplyoment.yamk file for microservices in kubertes (dovker hub images):
+
+
+
+    
+    
+
 - Step 28 - Deploy Microservices to Kubernetes
 - Step 29 - Understand Environment Variables created by Kubernetes for Services
 - Step 30 - Microservices and Kubernetes Service Discovery - Part 1
