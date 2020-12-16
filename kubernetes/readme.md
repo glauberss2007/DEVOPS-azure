@@ -426,15 +426,30 @@ Resource use display:
 Overview regard microservices  present on ../projects/microservices  
 json file understand
 
-Create deplyoment.yamk file for microservices in kubertes (dovker hub images):
-
-
-
-    
-    
-
 - Step 28 - Deploy Microservices to Kubernetes
+Deploy microservices .yaml file
+microservice 1 (currency-exchange):
+
+    kubectl apply -f exchange-deployment.yaml
+    
+microservice 2 (currency-conversion):    
+
+    kubectl apply -f conversion-deployment.yaml
+    
+Both microservices are now runing and ms2 comunicate with ms1 geting exchange value for conversion:
+
+    kubectl get svc --watch
+    
 - Step 29 - Understand Environment Variables created by Kubernetes for Services
+Kubernets log all the environtment variables when starting.
+Checking log of one pod, we found a lot of "SERVICENAME_SERVICE_HOST" and "SERVICENAME_PORT", that is, kubernates use environtment variables 
+to past services, and not directly IP, and the sintaxe are:
+
+    $SERVICE_NAME$_SERVICE_HOST
+    
+This variable is used to one microservice (conversion MS) knows the location of other microservice (exchange),
+It uses the variable name created and not direct the internal IP.
+    
 - Step 30 - Microservices and Kubernetes Service Discovery - Part 1
 - Step 31 - Microservices and Kubernetes Service Discovery - Part 2 DNS
 - Step 32 - Microservices Centralized Configuration with Kubernetes ConfigMaps
