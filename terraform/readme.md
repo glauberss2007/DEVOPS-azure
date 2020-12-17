@@ -9,17 +9,22 @@ Requirement:
 Microservices has many differentes technologies used, with requiriments and diferents dependences.
 
 Manual approach example:
-Provision server > isntall java > isntall tomcat > configure tomcat > deploy app
+  
+  Provision server > install java > install tomcat > configure tomcat > deploy app
 
-IaC - Benefits on provision server and app configuration steps.
+IaC - Benefits on provision server and app configuration steps:
+
 Terraform, Cloud formation:
-Create a template > provision server
+
+   Create a template > provision server
 
 Ansible, chef, puppet:
-Install softwares > configure softwares 
 
-Jenkins
-Deploy app into server...!
+  Install softwares > configure softwares 
+
+Jenkins:
+
+  Deploy app into server...!
 
 Manual approach example:
 Provision server > isntall java > isntall tomcat > configure tomcat > deploy app
