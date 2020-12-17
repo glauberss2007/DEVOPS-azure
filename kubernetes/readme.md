@@ -451,13 +451,150 @@ This variable is used to one microservice (conversion MS) knows the location of 
 It uses the variable name created and not direct the internal IP.
     
 - Step 30 - Microservices and Kubernetes Service Discovery - Part 1
+In deployment file of currency you can set the required conection enviroment of targe microservice
+    
+    ...
+    spec:
+      containers:
+      - image: in28min/currency-conversion:0.0.1-RELEASE #CHANGE
+        imagePullPolicy: IfNotPresent
+        name: currency-conversion
+        # env:
+        #   - name: CURRENCY_EXCHANGE_SERVICE_HOST
+        #     value: http://currency-exchange
+        
+        #     valueFrom: 
+        #       configMapKeyRef:
+        #         key: CURRENCY_EXCHANGE_SERVICE_HOST
+        #         name: currency-conversion-config-map
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      ...
+
 - Step 31 - Microservices and Kubernetes Service Discovery - Part 2 DNS
+Sevice discover automatic configure DNS for that service
+    
+    ...
+    spec:
+      containers:
+      - image: in28min/currency-conversion:0.0.1-RELEASE #CHANGE
+        imagePullPolicy: IfNotPresent
+        name: currency-conversion
+        env:
+           - name: CURRENCY_EXCHANGE_SERVICE_HOST
+             value: http://currency-exchange
+        ...     
+        
+ So it works as load balancing using one DNS.
+        
 - Step 32 - Microservices Centralized Configuration with Kubernetes ConfigMaps
+Using config map is possible to centralize the enveronment variables names and relative services:
+
+Example of a configMap:
+    
+        apiVersion: v1
+        data:
+          CURRENCY_EXCHANGE_SERVICE_HOST: http://currency-exchange
+        kind: ConfigMap
+        metadata:
+          name: currency-conversion-config-map
+          namespace: default
+
+Raise a config map, to set an enviroment for current_exchange, into kubernets:
+
+    kubectl apply -f "configMap.yaml"
+    
+show config maps:
+    
+    kubectl get configMaps
+    
+Show details of a configMap:
+
+    kubectl describe configmap "NAME"
+
+Using a config map in deployment.yaml
+    
+    ...
+    labels:
+        app: currency-conversion
+    spec:
+      containers:
+      - image: in28min/currency-conversion:0.0.1-RELEASE #CHANGE
+        imagePullPolicy: IfNotPresent
+        name: currency-conversion
+        env:
+           - name: CURRENCY_EXCHANGE_SERVICE_HOST
+            # value: http://currency-exchange
+             valueFrom: 
+              configMapKeyRef:
+                 key: CURRENCY_EXCHANGE_SERVICE_HOST
+                 name: currency-conversion-config-map
+      restartPolicy: Always
+      ...
+      
+The configuration can be confirme using logs:
+
+    kubectl logs "currency-conversion..."
+      
 - Step 33 - Simplify Microservices with Kubernetes Ingress - Part 1
+    Load balances is an expensive service in the cloud.
+    
+    Minimize load balance qauntities are very important.
+    
+    Each service usually creates a new load balance i the cloud, so one option is:
+
+    change the type of services to nodePort instead of load balance:
+        
+        apiVersion: v1
+        kind: Service
+        metadata:
+          labels: #PODS
+            app: currency-exchange
+          name: currency-exchange
+          namespace: default
+        spec:
+          ports:
+          - # nodePort: 30702 #CHANGE
+            port: 8000 #CHANGE
+            protocol: TCP
+            targetPort: 8000 #CHANGE
+          selector:
+            app: currency-exchange
+          sessionAffinity: None #CHANGE
+          type: NodePort
+          
+     Configura an ingress to route an incoming request to one or multiple services.
+     Example of an ingress.yaml file:
+     
+        apiVersion: extensions/v1beta1
+        kind: Ingress
+        metadata:
+          name: gateway-ingress
+          annotations:
+            nginx.ingress.kubernetes.io/rewrite-target: /
+        spec:
+          rules:
+          - http:
+              paths:
+              - path: /currency-exchange/*
+                backend:
+                  serviceName: currency-exchange
+                  servicePort: 8000          
+              - path: /currency-conversion/*
+                backend:
+                  serviceName: currency-conversion
+                  servicePort: 8100
+        
 - Step 34 - Simplify Microservices with Kubernetes Ingress - Part 2
+    An overview about the ingress gateway created can be founded on cloud plataform or using:
+    
+        kubectl get svc --all-namespaces
+        
+   ps: ingress can take some mopre time to be created 
+
 - Step 35 - Delete Kubernetes Clusters
-
-
+    The mos easy wheu is use cloud console to delete the kubernets cluster.
+    
 ## Commands
 
 ```
