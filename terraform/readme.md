@@ -4,6 +4,39 @@
 - Provision EC2 based HTTP Servers with Load Balancer
 - Provision AWS and Azure Kubernetes Clusters (Azure DevOps Pipelines)
 
+## Understanding IaC problem
+Requirement:
+Microservices has many differentes technologies used, with requiriments and diferents dependences.
+
+Manual approach example:
+Provision server > isntall java > isntall tomcat > configure tomcat > deploy app
+
+IaC - Benefits on provision server and app configuration steps.
+Terraform, Cloud formation:
+Create a template > provision server
+
+Ansible, chef, puppet:
+Install softwares > configure softwares 
+
+Jenkins
+Deploy app into server...!
+
+Manual approach example:
+Provision server > isntall java > isntall tomcat > configure tomcat > deploy app
+
+Requirement:
+Microservices has many differentes technologies used, with requiriments and diferents dependences.
+
+IaC - Benefits on provision server and app configuration steps.
+Terraform, Cloud formation:
+Create a template > provision server
+
+Ansible, chef, puppet:
+Install softwares > configure softwares 
+
+Jenkins
+Deploy app into server...!
+
 ## Steps
 - Step 01 - Creating and Initializing First Terraform Project
 - Step 02 - Create AWS IAM User Access Key and Secret
