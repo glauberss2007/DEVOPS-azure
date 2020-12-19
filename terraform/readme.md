@@ -44,7 +44,34 @@ Deploy app into server...!
 
 ## Steps
 - Step 01 - Creating and Initializing First Terraform Project
-- Step 02 - Create AWS IAM User Access Key and Secret
+    Install terraform on oracle cloud: https://docs.cloud.oracle.com/en-us/iaas/Content/API/SDKDocs/terraformgetstarted.htm
+    
+Check version:
+  
+    terraform -v
+
+Create a folder to store terraform files, that have extensios ".tf"
+The providers initial specification must be configured (AWS, GCP, Oracle,...), creating an main.tf file content oracle initial provider configuration:
+
+    variable "region" {}
+
+    provider "oci" {
+      auth = "InstancePrincipal"
+      region = "${var.region}"
+    }
+
+execute the follow comand in the same folder as the file main.tf is in:
+
+    terraform init
+    
+- Step 02 - Create Oracle IAM/AWS User Access Key and Secret
+To create the IAM to aceess resource use https://docs.cloud.oracle.com/en-us/iaas/big-data/doc/create-iam-users-and-add-them-iam-groups.html
+and them add him to administrator greoup identity>groups.
+Oracle configuration: https://docs.cloud.oracle.com/en-us/iaas/developer-tutorials/tutorials/tf-provider/01-summary.htm
+
+AWS configuration:
+    
+
 - Step 03 - Configure Terraform Environment Variables for AWS Access Keys
 - Step 04 - Creating AWS S3 Buckets with Terraform
 - Step 05 - Playing with Terraform State - Desired, Known and Actual
