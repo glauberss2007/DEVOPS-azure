@@ -250,11 +250,80 @@ It is very important to create a "gitignore" file in teh same folder of tfsates 
 The terrform state has sensitive information so you must no share it
   
 - Step 11 - Refactoring Terraform files - Variables, Main and Outputs
-
   
+  You can have multiples .tf files with any names and concate them
 
+to delete the resources created use the following comand
+
+    terraform destroy
+    
 - Step 12 - Creating Terraform Project for Multiple IAM Users
+a new terraform project only needs a new folder
+
+create a new folder "02" for this project
+
+    insert provider informations
+    
+use the previous main.tf only with provider
+
+use index and count to create multiples resources:
+
+      resource "aws_iam_user" "my_iam_user" {
+        count = 2
+        name = "my_iam_user_${cunt.index}"
+    }
+    
+then, i the folder of the new project execute
+
+    terraform init
+    
+    terraform apply
+    
+PS: use terraform document to knows the resources types and their arguments as well how use it in the link https://registry.terraform.io/browse/providers
+
+increase the number of users editing main.tf file
+
+        resource "aws_iam_user" "my_iam_user" {
+            count = 3
+            name = "my_iam_user_${cunt.index}"
+    }
+
+then user "terraform apply" to confirm the one more user was created.
+
 - Step 13 - Playing with Terraform Commands - fmt, show and console
+
+open users on terraform console
+
+    terraform console
+    
+    > aws_iam_user.my_iam_users
+    
+or access a specific user onfiguraation using index    
+
+    > aws_iam_user.my_iam_users[0].arn
+    
+to confirm and validate the sintaxe of desired file use
+
+    terraform validate
+    
+to format it in a clean code use (2 spaces or tab):
+
+    terraform fmt
+    
+show what is in the satege
+
+    terraform show
+    
+specifies the output of terraform file
+
+    terraform plan -o iam.tfplan
+    
+and the apply with
+
+    terraform apply iam.tfplan
+    
+Check the manual in https://www.terraform.io/docs/commands/apply.html to see more details of parameters    
+
 - Step 14 - Recovering from Errors with Terraform
 - Step 15 - Understanding Variables in Terraform
 - Step 16 - Creating Terraform Project for Understanding List and Map
