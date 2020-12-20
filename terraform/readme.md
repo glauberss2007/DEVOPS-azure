@@ -46,6 +46,8 @@ Deploy app into server...!
 - Step 01 - Creating and Initializing First Terraform Project
     Install terraform on oracle cloud: https://docs.cloud.oracle.com/en-us/iaas/Content/API/SDKDocs/terraformgetstarted.htm
     
+    Install terraform on AWS: https://askubuntu.com/questions/983351/how-to-install-terraform-in-ubuntu#:~:text=%20Steps%20to%20install%20terraform%20on%20Ubuntu%20%2F,4%20Extract%20the%20downloaded%20file%20archive%0Aunzip...%20More%20
+    
 Check version:
   
     terraform -v
@@ -53,12 +55,26 @@ Check version:
 Create a folder to store terraform files, that have extensios ".tf"
 The providers initial specification must be configured (AWS, GCP, Oracle,...), creating an main.tf file content oracle initial provider configuration:
 
+AWS Example:
+
+    # Configure the AWS Provider
+    provider "aws" {
+      version = "~> 3.0"
+      region  = "us-east-1"
+    }
+    
+PS: https://registry.terraform.io/providers/hashicorp/aws/latest/docs    
+
+Oracle example:
+    
     variable "region" {}
 
     provider "oci" {
       auth = "InstancePrincipal"
       region = "${var.region}"
     }
+    
+    
 
 execute the follow comand in the same folder as the file main.tf is in:
 
@@ -69,10 +85,17 @@ To create the IAM to aceess resource use https://docs.cloud.oracle.com/en-us/iaa
 and them add him to administrator greoup identity>groups.
 Oracle configuration: https://docs.cloud.oracle.com/en-us/iaas/developer-tutorials/tutorials/tf-provider/01-summary.htm
 
-AWS configuration:
+AWS configuration: https://linuxbeast.com/tutorials/aws/create-a-new-iam-users-on-aws-console/#:~:text=%20How%20to%20Create%20A%20New%20IAM%20Users,to%20add%20tags%20to%20your%20IAM...%20More%20
     
-
 - Step 03 - Configure Terraform Environment Variables for AWS Access Keys
+AWS: You will need the information provided in .csv file generated on step02
+
+Execute following comands:
+    
+    export AWS_ACCESS_KEY_ID="ACCESSKEY"
+    
+    export AWS_SECRET_ACCESS_KEY="SECRETKEY"
+
 - Step 04 - Creating AWS S3 Buckets with Terraform
 - Step 05 - Playing with Terraform State - Desired, Known and Actual
 - Step 06 - Playing with Terraform Console
