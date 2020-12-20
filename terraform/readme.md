@@ -74,8 +74,6 @@ Oracle example:
       region = "${var.region}"
     }
     
-    
-
 execute the follow comand in the same folder as the file main.tf is in:
 
     terraform init
@@ -97,13 +95,164 @@ Execute following comands:
     export AWS_SECRET_ACCESS_KEY="SECRETKEY"
 
 - Step 04 - Creating AWS S3 Buckets with Terraform
+edit main.tf file:
+
+    # plan - execute
+    resource "aws_s3_bucket" "my_s3_bucket"{
+      bucket = "my-s3-bucket-infocs-glauber-1"
+    }
+
+command to confirme what terraform will do:
+
+    terraform plan
+    
+execute the terraform planed (30 s):
+
+    terraform apply
+    
+Then you can confirm that the new s3 ucket resource was created
+    
 - Step 05 - Playing with Terraform State - Desired, Known and Actual
+  
+  Terraform check if there any changes on main.tf and also create a json file with more details of resources applied
+  How it owrks:
+  
+  # STAGES
+  # DESIRED (main.tf) - KNOWN (terraform.tfstate) - ACTUAL (changes in the cloud)
+  
+  Edit bucket s3 name on terraform nad apply
+  
+  enablin versions on bucket editing main.tf:
+
+# plan - execute
+    resource "aws_s3_bucket" "my_s3_bucket"{
+      bucket = "my-s3-bucket-infocs-glauber-2"
+      versioning {
+        enabled = true
+        }
+    }
+   
 - Step 06 - Playing with Terraform Console
+Using terraform console
+
+    terraform console
+    
+Use the typeOfResoucer.nameOfResource on terraform console
+
+get information about an resource (bucket):
+
+    > aws_s3_bucket.my_s3_bucket
+
+check more abaout an specific feature that has his description inside an square bracket (zero because it is the first element)
+
+    > aws_s3_bucket.my_s3_bucket.versioning[0].enabled
+    
+to get informtion directly after main.tf file executes, insert follow line in main.tf:
+
+    output "my_s3_bucket_versioning" {
+      value = aws_s3_bucket.my_s3_bucket.versioning[0].enabled
+    }
+    
+then
+
+    terraform apply -refresh=false
+
+for complete details edit main.tf:
+
+      output "my_s3_bucket_details" {
+      value = aws_s3_bucket.my_s3_bucket
+    }
+    
+then use -refresh=false parameter to do not refresh all jn file against real infra (faster excution)    
+
+    terraform apply -refresh=false
+    
 - Step 07 - Creating AWS IAM User with Terraform
+add in min.tf file:
+
+    resource "aws_iam_user" "my_iam_user" {
+      name = "my_iam_user_glauber"
+    }
+
+then use the follow comando to stroe the plan result in a locla file
+
+    terraform plan -out iam.tfplan
+    
+after confirm the planned you can apply it executing the generated tfplan file:
+
+    terraform apply "iam.tfplan"
+    
+ teh execution is faster then without and plan file because it doens not compare
+ 
+ add output line in tho show iam user details
+ 
+      output "my_iam_user_complete_details" {
+        value = aws_s3_bucket.my_iam_user
+    }
+ 
+ tehn
+ 
+    terraform apply -refresh=false
+
+check details form terrafior console:
+
+    terraform console
+    
+    > aws_iam_user.my_iam_user
+
 - Step 08 - Updating AWS IAM User Name with Terraform
+
+Terrafor is vey intelignet, it means, depending on resource, the rename will operate in diferent ways
+
+rename a bucket will delete the acua one and rcreate another
+
+rename a user will change it instead of recrete as a bucket resource
+
+to execute an iam name change only in one resource of main.tf file, you must update it with the new name:
+
+    resource "aws_iam_user" "my_iam_user" {
+      name = "my_iam_user_glaubersoares"
+    }
+
+then,
+
+    terraform apply -target=aws_iam_user.my_iam_user
+
+confirm with yes
+
 - Step 09 - Understanding Terraform tfstate files in depth
+
+terraform.tfstate is the actual last applyed chenges
+
+terraform.tfstate.backup is the previous confguration file
+
+renaming both file "terraform.tfstate.001" and "terraform.tfstate.backup.001", terraform lost his "KNOW" state
+
+so if you execute 
+
+    terraform plan
+    
+it will return the creation of bucket and iam already existent.
+
+Without the KNOWN file terraform cant map the resource nformation with the one in te clouyd, and them, will try to create the resources again.
+The KNOWN file has datails needed to access and edit the resources in cloud.
+
 - Step 10 - gitignore Terraform tfstate files
+Terraform never can be part of an git version control.
+
+It is very important to create a "gitignore" file in teh same folder of tfsates files
+
+# terraform excludes
+*.tfstate
+*.tfstate.backup
+.terraform
+
+The terrform state has sensitive information so you must no share it
+  
 - Step 11 - Refactoring Terraform files - Variables, Main and Outputs
+
+  
+
 - Step 12 - Creating Terraform Project for Multiple IAM Users
 - Step 13 - Playing with Terraform Commands - fmt, show and console
 - Step 14 - Recovering from Errors with Terraform
