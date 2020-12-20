@@ -285,7 +285,7 @@ increase the number of users editing main.tf file
 
         resource "aws_iam_user" "my_iam_user" {
             count = 3
-            name = "my_iam_user_${cunt.index}"
+            name = "my_iam_user_${count.index}"
     }
 
 then user "terraform apply" to confirm the one more user was created.
@@ -325,7 +325,68 @@ and the apply with
 Check the manual in https://www.terraform.io/docs/commands/apply.html to see more details of parameters    
 
 - Step 14 - Recovering from Errors with Terraform
+
+If you run an tf with an erro you just need to rerun the correct one with correct information to update it.
+
 - Step 15 - Understanding Variables in Terraform
+    
+Create a variable:
+
+    variable "iam_user_name_prefix" {
+      default = "my_iam_user"
+    }
+    
+using the variable:
+
+     resource "aws_iam_user" "my_iam_user" {
+        count = 3
+        name = "${var.iam_user_name_prefix}_${count.index}"
+    }
+    
+Then apply,
+    
+    terraform apply
+    
+You can use the variable types:
+    
+    variable "iam_user_name_prefix" {
+      type = string #any, number, bool, list, map, set, object, tuple
+      default = "my_iam_user"
+    }
+
+and use validate to confirm
+
+    terraform validate
+    
+PS: terrafor will ask you for the variables name prefixo if not specified.    
+
+Export an variable:
+
+Linux:
+    
+    export TF_VAR_iam_user_name_prefix = FROM_ENV_VARIABLE_IAM_PREFIX
+    
+Windows
+    
+    setx TF_VAR_iam_user_name_prefix = FROM_ENV_VARIABLE_IAM_PREFIX
+    
+or
+
+    set TF_VAR_iam_user_name_prefix = FROM_ENV_VARIABLE_IAM_PREFIX
+
+The priority variables are:
+    
+    1º Variables declared using comando line
+    2º Variables set inside .tfvars file
+    3º Variables sei inside .tf file
+
+Use to check the variables applied:
+
+    terraform plan -refresh=false
+    
+
+
+
 - Step 16 - Creating Terraform Project for Understanding List and Map
 - Step 17 - Adding Elements - Problem with Terraform Lists
 - Step 18 - Creating Terraform Project for Learning Terraform Maps 
