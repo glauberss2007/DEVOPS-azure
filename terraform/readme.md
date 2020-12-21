@@ -507,7 +507,25 @@ destroy it before continue:
     terraform destroy
     
 - Step 19 - Quick Review of Terraform FAQ
+
+review STATE
+
+  KNOWN -> present in your terraform.tfstate
+  DESIRED -> Declared on .tf file
+  ACTUAL -> Presented on teh cloud (AWS, Oracle, GCP,...)
+      
+ terraform.tfsate store details of resources (on AWS) and found details dependencies
+ 
+ BEST Practicies:
+ 
+  Group Resources having similar lifecycles and create separate terraform projects for them
+  
+  Use visual code to expanded project in a tree and also create a backup folder with copy of original projects. This is importat to avoid errors.
+      
 - Step 20 - Understanding Creation of EC2 Instances in AWS Console
+  
+  Manual creation of an EC2
+  
 - Step 21 - Creating New Terraform Project for AWS EC2 Instances
 - Step 22 - Creating New EC2 Key Pair and Setting Up
 - Step 23 - Adding AWS EC2 Configuration to Terraform Configuration
