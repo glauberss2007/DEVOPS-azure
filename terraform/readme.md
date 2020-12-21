@@ -384,12 +384,128 @@ Use to check the variables applied:
 
     terraform plan -refresh=false
     
+Apply new variables from a .tfvars file
 
-
+    terraform aply -var-file="some-name.tfvars"
+    
+PS: Variables is very important due it makes the envoronment dinamic and that is normally used such development, homologation and production.
 
 - Step 16 - Creating Terraform Project for Understanding List and Map
+    
+Create the project 03 and use the project 02 file.
+
+create a new variable in main.tf file,
+
+      variable "names" {
+      default = ["ravs", "tom", "jane"]
+      #default = ["ranga", "tom", "jane"]
+    }
+
+    provider "aws" {
+      region  = "us-east-1"
+      version = "~> 2.46"
+    }
+
+    resource "aws_iam_user" "my_iam_users" {
+      #count = length(var.names)
+      #name  = var.names[count.index]
+      for_each = toset(var.names)
+      name = each.value
+    }
+    
+Create a list of names    
+
+Set all the names as a list of variables,
+
+    variable "names" {
+      default = ["ravs", "tom", "jane"]
+     }
+    
+Then execute it using lenght method,
+
+    resource "aws_iam_user" "my_iam_users" {
+      count = length(var.names)
+      name  = var.names[count.index]
+    }
+
+On terraform console you can use some comand like:
+
+    >length(var.names)
+    >reverse(var.names)
+    >distinct(var.names)
+    >toset(var.names)
+
+To concate, use same type:
+
+    >concat(var.names, ["new_value"])
+    
+Search by content
+
+    >contains(var.names,"ranga")
+    
+Sorting
+
+    >sort(var.names)
+    
+Ranging select range(begin,end,step_size)
+
+    >range(1,10)
+    >range(1,10,2)
+    
+More functions can be founded in https://www.terraform.io/docs/configuration/functions.html
+
 - Step 17 - Adding Elements - Problem with Terraform Lists
+  The type of container to be used is very important
+  
+  Add a new user on first index of a list will change all the others,
+  
+  In this case other types to store tha values are recomended.
+  
+  So, lets use a diferent store type and destroy the current one,
+  
+      terraform destroy -refresh=false
+      
+  Modify the .tf file to
+  
+      resource "aws_iam_user" "my_iam_users" {
+        for_each = toset(var.names)
+        name  = each.value
+      }
+  
+  list is used when teh position is important
+  for_each is used when the data is the important
+
 - Step 18 - Creating Terraform Project for Learning Terraform Maps 
+    
+    Maps is used to associate a resource to an argument such user to his country etc...
+    
+Create a variable map of string eith other map,
+
+    variable "users" {
+      default = {
+        ravs : { country : "Netherlands", department : "ABC" },
+        tom : { country : "US", department : "DEF" },
+        jane : { country : "India", department : "XYZ" }
+      }
+    }
+    
+Selectin user as key and country,department as tags,
+
+      resource "aws_iam_user" "my_iam_users" {
+        for_each = var.users
+        name     = each.key
+        tags = {
+          #country: each.value
+          country : each.value.country
+          department : each.value.department
+        }
+      }
+
+
+destroy it before continue:
+  
+    terraform destroy
+    
 - Step 19 - Quick Review of Terraform FAQ
 - Step 20 - Understanding Creation of EC2 Instances in AWS Console
 - Step 21 - Creating New Terraform Project for AWS EC2 Instances
