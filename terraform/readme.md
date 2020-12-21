@@ -527,8 +527,66 @@ review STATE
   Manual creation of an EC2
   
 - Step 21 - Creating New Terraform Project for AWS EC2 Instances
+
+Creating the security group:
+
+      // provider configuration
+      provider "aws" {
+      region = "us-east-2"
+      }
+
+      // HTTP Server -> SG
+      // SG -> 80 TCP, 22 TCP, CIDR ["0.0.0.0/0"]
+
+      resource "aws_security_group" "http_server_sg" {
+      name   = "http_server_sg"
+      vpc_id = "vpc-7638861d"
+
+      ingress {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      }
+
+      ingress {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      }
+
+      egress {
+      from_port   = 0
+      to_port     = 0
+      protocol    = -1
+      cidr_blocks = ["0.0.0.0/0"]
+      }
+
+      tags = {
+      name = "http_server_sg"
+      }
+    }
+
+ More argumetns: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group
+ 
 - Step 22 - Creating New EC2 Key Pair and Setting Up
+ 
+Creating a key pair using console and store it in your locar user folder with owner read access only   
+
 - Step 23 - Adding AWS EC2 Configuration to Terraform Configuration
+
+Add the follow lines in main.tf
+
+      // Create an EC2 instance (hard code)
+      resource "aws_instance" "http_server" {
+        ami= "ami-09558250a3419e7d0"
+        key_name= "local_glauber"
+        instance_type= "t2.micro"
+        vpc_security_group_ids = [aws_security_group.http_server_sg.id]
+        subnet_id= "subnet-db83c497"
+    }
+
 - Step 24 - Installing Http Server on EC2 with Terraform - Part 1
 - Step 25 - Installing Http Server on EC2 with Terraform - Part 2
 - Step 26 - Remove hardcoding of Default VPC with AWS Default VPC
