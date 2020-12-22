@@ -126,10 +126,167 @@ Multiple lines script task:
 
 - Step 05 - Getting Started with Azure DevOps - Agents and Jobs - 2
 
+Adding multiple jobs:
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        # Pipelines > stages > jons > tasks(steps)
+
+        jobs:
+        - job: Job1
+          steps:
+          - script: echo Hello, world, changed!
+            displayName: 'Run a one-line script'
+
+          - script: |
+              echo Add other tasks to build, test, and deploy your project.
+              echo See https://aka.ms/yaml
+            displayName: 'Run a multi-line script'
+        - job: Job2
+          steps:
+          - script: echo Job2
+            displayName: 'Run a one-line script'
+            
+PS: These 2 job runned in pararel with no dependences and in diferentes agnest (diferente machines)            
 
 - Step 06 - Using dependsOn with Jobs
+
+Configuring dependeces where job 2 depends of job 1 and job 3 depends on job 2:
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        # Pipelines > stages > jons > tasks(steps)
+
+        jobs:
+        - job: Job1
+          steps:
+          - script: echo Hello, world, changed!
+            displayName: 'Run a one-line script'
+          - script: |
+              echo Add other tasks to build, test, and deploy your project.
+              echo See https://aka.ms/yaml
+            displayName: 'Run a multi-line script'
+        - job: Job2
+          dependsOn: Job1
+          steps:
+          - script: echo Job2
+            displayName: 'Run a one-line script'
+        - job: Job3
+          dependsOn: Job2
+          steps:
+          - script: echo Job3!
+            displayName: 'Run a one-line script'                        
+
 - Step 07 - Creating Azure DevOps Pipeline for Playing with Stages 
+    
+Configuring multiple stages:
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        stages:
+        - stage: Build
+          jobs:
+          - job: FirstJob
+            steps:
+            - bash: echo Build FirstJob
+          - job: SecondJob
+            steps:
+            - bash: echo Build SecondJob
+        - stage: DevDeploy
+          jobs:
+            - job: DevDeploy
+              steps:
+              - bash: echo Build DevDeploy
+        - stage: QADeploy
+          jobs:
+            - job: QADeploy
+              steps:
+              - bash: echo Build QADeploy
+        - stage: ProdDeploy
+          jobs:
+            - job: ProdDeploy
+              steps:
+              - bash: echo Build ProdDeploy
+    
+PS: Default stages proccess depends of prevously one
+
+To apply specific dependences:
+
+    trigger:
+    - main
+
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    stages:
+    - stage: Build
+      jobs:
+      - job: FirstJob
+        steps:
+        - bash: echo Build FirstJob
+      - job: SecondJob
+        steps:
+        - bash: echo Build SecondJob
+    - stage: DevDeploy
+      dependsOn: Build
+      jobs:
+        - job: DevDeploy
+          steps:
+          - bash: echo Build DevDeploy
+    - stage: QADeploy
+      dependsOn: Build
+      jobs:
+        - job: QADeploy
+          steps:
+          - bash: echo Build QADeploy
+    - stage: ProdDeploy
+      dependsOn: 
+      - DevDeploy
+      - QADeploy
+      jobs:
+        - job: ProdDeploy
+          steps:
+          - bash: echo Build ProdDeploy
+    
 - Step 08 - Playing with Variables and dependsOn for Stages
+
+Pipeline level variable:
+
+    Go on Edit > Variables > new variable
+
+Variable name:
+        
+        PipelineLevelVariable
+       
+Variable value:
+
+        PipelineLevelVariableValue
+        
+Stage leve vriable:
+    
+      ...
+      - stage: DevDeploy
+      variables:
+        environment: Dev
+      dependsOn: Build
+      jobs:
+        - job: DevDeployJob
+          steps:
+          - bash: echo $(environment)DeployJob
+     ...   
+        
 - Step 09 - Understanding Azure DevOps Pipeline Variables
 - Step 10 - Creating Azure DevOps Tasks for Copy Files and Publish Artifacts
 - Step 11 - Running Azure DevOps Jobs on Multiple Agents
