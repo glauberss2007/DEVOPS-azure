@@ -588,17 +588,229 @@ Add the follow lines in main.tf
     }
 
 - Step 24 - Installing Http Server on EC2 with Terraform - Part 1
+  
+Insert in aws_isntance resource:
+
+    variable "aws_key_pair" {
+      default = "~/aws/aws_keys/"name.pem"
+    }
+    
+    ...
+    
+    connection {
+        type = "ssh"
+        host = self.public_ip
+        user = "ec2-user"
+        private_key = file(var.aws_key_pair)
+    }
+    
+    provisioner "remote-exec" {
+        inline = [
+          //install httpd
+          "sudo yum isntall httpd -y",
+          //start
+          "sudo service httpd start",
+          //copy a file
+          "echo Welcome to Glauber GitHub - Vurtua Server is at ${self.public_dns} | sudo tee /var/www/html/index.html"
+        ]
+    }
+
 - Step 25 - Installing Http Server on EC2 with Terraform - Part 2
+  
+    Execute the terraform file and confirm taht the http service is accessible over internet (configured directly from terraform)
+    
+Good Practice: Imumutable servers    
+
+  Wrong: provision Server -> Tweak 1 (script 1) -> Tweak 2 (script 2) -> Tweak 3 (script 3) -> Current State
+  
+  Correct(Immutable concept): Provision Server v1 -> Provision Server v2 -> Confirm Server v2 -> Remover Server v1 -> ...
+
 - Step 26 - Remove hardcoding of Default VPC with AWS Default VPC
+
+Using data provider instead fof hardcode:
+
+Configure default vpc
+
+      resource "aws_default_aws" "default" {
+      
+      }
+
+Then apply and use the variables generated on .tfstate to change hardcoe values to respective variable on AWS-DEFAULT_AWS.
+
 - Step 27 - Remove hardcoding of subnets with Data Providers
+
+Configure data provider:
+
+    data "aws_subnet_ids" "default_subnets" {
+      vpc_id = aws_default_vpc.default.id
+    }
+
+then apply with -target...
+
+go to terraform console
+
+    terraform console
+    
+    > data.aws_subnet_ids.default_subnets
+    
+Confirm the index of you subnet and change the hardcode
+
+    > tolist(data.aws_subnet_ids.default_subnets.ids)[0]
+    
 - Step 28 - Remove hardcoding of AMI with Data Providers
+
+configure data provider:
+
+    data "aws_ami_ids" "aws-linux-2-latest_ids" {
+      owners = ["amazon"]
+    }  
+    
+Then insert    
+    
+    data "aws_ami" "aws-linux-2-latest" {
+      most_recent = true
+      owners = ["amazon"]
+      filter{
+        name = "name"
+        values = ["amzn2-ami-hbm-*"]
+    }
+    
+Apply and confirm using terraform console
+
+    terraform apply
+    terraform console
+    > data.aws_ami.aws_linux_2_latest
+
 - Step 29 - Playing with Terraform Graph and Destroy EC2 Instances
+  
+  Execute the graph comand:
+  
+      terraform graph
+      
+Copy the file and past it on "graphviz online" https://dreampuf.github.io/ to see a resource diagram with all resources dependences...
+
+Create variables.tf and data-providers.tf files and move respective functions from main.tf to them in order to make terrafomrm project clean
+
+Confirm that no chages occurs using
+
+    terraform apply
+    
+or
+
+    terraform plan
+
+
 - Step 30 - Creating New Terraform Project for AWS EC2 with Load Balancers
+
+Creating multiples http_servers under a load balancer using terraform
+
+Using the previous prject main.tf file, change:
+
+    resource ... "http_server" to "http_servers"
+    
+and subnet sintaxe to 
+    
+    for_each = data.aws_subnet_ids.default_subnets.ids
+    subnet_id = each.value
+    
+    tags = {
+      name : "http_servers_${each.value}"
+    }
+    
+and tehn destroy previous project , init the new one and apply it twice using target in the secondtry
+
+confirm that they are runin using the public DNS to access then via brownser
+
 - Step 31 - Create Security Group and Classic Load Balancer in Terraform
+
+change security group renaming it to elb_sg, remove the ingress of 22 port and tag.
+
+Create the load balancer resource
+
+    resource "aws_elb" "elb" {
+      name = "elb"
+      subnets = data.aws_subnet_ids.default_subnets.ids
+      security_groups = [aws_security_group.elb_sg.id]
+      instances = values(aws_instance.http_servers).*.id
+
+      listener {
+        instance_port = 80
+        instance_protocol = "http"
+        lb_port = 80
+        lb_rotocol = "http"
+      }
+
+then apply it
+
+PS: use documents and terraform console to test the functions return values
+
 - Step 32 - Review and Destroy AWS EC2 with Load Balancers
+
+    terraform destroy
+  
 - Step 33 - Creating Terraform Project for Storing Remote State in S3 
+  
+Start from a basic main.tf and output.tf
+
+Initialize and aplly for this new project
+
+    terraform init
+    
+    terrafomr apply
+    
+Confirm terraform.tf file created
+
+Create a folder backend_state and users folder
+
+Move terraforms to users
+
 - Step 34 - Create Remote Backend Project for Creating S3 Buckets
+
+create a s3 bcket
+
+    //S3 Bucket       
+    resource "aws_s3_bucket" "enterrise_backend_state" {
+      bucket = "dev-application-backend-state-glaubersoares"
+      
+      lifecycle{
+        prevent_destroy = true
+      }
+      
+      versioning{
+        enabled=true
+      }
+      
+      server_side_encryption_configuration {
+        rule{
+          apply_server_side_encryption_by_default{
+            sse_algorithm = "AES256"
+          }
+        }
+      } 
+     }
+     
+     //Locking - Dynamo DB (only one user editing terraform)
+     
+     resource "aws_dynamodb_table" "enterrise_backend_lock" {
+      name = "dev_application_locks"
+      billing_mode = "PAY_PER_REQUEST"
+      
+      hash_key = "LockID"
+      attribute {
+        name = "LockID"
+        type = "S"
+      }
+     }
+these changes must be done inside main.tf at backend-state folder
+
+then init it, validate and apply
+
 - Step 35 - Update User Project to use AWS S3 Remote Backend
+
+After create the S3 bucket and dynamodb the store it on s3 addinf follow lines on main.tf
+
+
+
 - Step 36 - Creating multiple environments using Terraform Workspaces
 - Step 37 - Creating multiple environments using Terraform Modules
 
