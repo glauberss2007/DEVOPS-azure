@@ -809,12 +809,66 @@ then init it, validate and apply
 
 After create the S3 bucket and dynamodb the store it on s3 addinf follow lines on main.tf
 
+variable application_name {
+  default = "backend-state"
+}
 
+
+variable project_name {
+  default = "users"
+}
+
+variable environment_name {
+  default = "dev"
+}
+
+terraform {
+  backend "s3" {
+    bucket = "dev-application-backend-state-glaubersoares"
+    key = "${var.application_name}-${var.project_name}-${var.environment}"
+    region = "us-east-2"
+    dynamodb_table = "dev_application_locks"
+    encrypt = true
+  }
+}
+
+PS: The beste practcite is to keep the .tf file in bucket instead of local machine.
 
 - Step 36 - Creating multiple environments using Terraform Workspaces
+
+Show workspace:
+    
+    terraform workspace show
+    
+Crea a new workspace
+
+    terraform workspace new prod-env
+    
+Customize user for workspaces:
+
+    resource "aws_iam_user" "my_iam_user" {
+      name = "${terraform.workspace}_my_iam_user_glauber"
+    }
+    
+List workspaces:
+
+    terraform workspace lsit
+    
+Select a different workspace
+
+    terraform select wrkspace "WORKSPACE_NAME"
+
+PS: The chance to make a mistake using workspace is very high
+
+
 - Step 37 - Creating multiple environments using Terraform Modules
 
+Conect to another terrafor file (environment) using module:
 
+    module "user_module" {
+      source = "../../terraform-modules/"
+      environment = "dev"
+    }
 
 ## Commands Executed
 
