@@ -34,11 +34,99 @@ Requirements: Azure Account = VS Code + Docker
     
 - Step 02 - Setting up Git Repo for Azure DevOps Pipeline
 
-  
-  
+    Selec currency-exhange project from microservices rojects folder and copy to an azure-devops-kubernetes-terraform-pipeline folder.
+    
+generate a ssh key for git hub:
+
+     ssh-keygen -t rsa -C "glauberss2007@gmail.com"
+     
+Copy content of .pub generated key to github ssh user configuration in settings options
+
+Initialize git inside pipeline folder:
+    
+    git init
+    
+select all
+    
+    git add *
+    git add .
+    
+Commit with initial message
+
+    git commit -m "First commit"
+    
+Push local project to remote:
+
+    git push -u origin main
+    
 - Step 03 - Creating your first Azure DevOps Pipeline
+
+Access you project on azure devops and pipelines -> Pipelines -> Create Pipeline -> Conect to your repository.
+
+Azure devops will indicate some tools to next step, in this case due dockerfile, docker, kubernetes,etc...
+
+Select Starter Pipeline to configure it in an yaml file
+
+Change the name and save and run
+
+Confirm on github and  on azuredevops > pipeline > jobs the progress oon each  step.
+    
 - Step 04 - Getting Started with Azure DevOps - Agents and Jobs - 1
+
+    You can see execution history on pipeline runs
+    
+    All the chabges made form remote,origin or other will be hown in azure devops 
+    
+    Click on edit to see the yaml file:
+
+    
+Triggered changes on te master(main) branch:
+
+        trigger:
+        - main
+
+The Operational system of agent
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+The agent information is on teh job
+        
+        ...
+        Starting: Initialize job
+        Agent name: 'Hosted Agent'
+        Agent machine name: 'fv-az40-526'
+        Current agent version: '2.179.0'
+        Operating System
+        Ubuntu
+        20.04.1
+        LTS
+        ...
+
+PS: It is possible to add an custom pool that can represent your data center servers, etc...for this
+
+Azure Devops project -> project Settings -> Agent Pool
+
+
+Tasks configuration using steps
+
+One line script task:
+
+        steps:
+        - script: echo Hello, world, changed!
+          displayName: 'Run a one-line script'
+
+Multiple lines script task:
+
+        - script: |
+            echo Add other tasks to build, test, and deploy your project.
+            echo See https://aka.ms/yaml
+          displayName: 'Run a multi-line script'
+
+
 - Step 05 - Getting Started with Azure DevOps - Agents and Jobs - 2
+
+
 - Step 06 - Using dependsOn with Jobs
 - Step 07 - Creating Azure DevOps Pipeline for Playing with Stages 
 - Step 08 - Playing with Variables and dependsOn for Stages
