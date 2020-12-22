@@ -29,7 +29,13 @@ Requirements: Azure Account = VS Code + Docker
 
 
 - Step 01 - Getting Started with Azure DevOps - First Project
+
+    Create a new project named "azure-devops-kubernetes-terraform" in azure devops workspace
+    
 - Step 02 - Setting up Git Repo for Azure DevOps Pipeline
+
+  
+  
 - Step 03 - Creating your first Azure DevOps Pipeline
 - Step 04 - Getting Started with Azure DevOps - Agents and Jobs - 1
 - Step 05 - Getting Started with Azure DevOps - Agents and Jobs - 2
