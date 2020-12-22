@@ -12,6 +12,22 @@
 - CI/CD/IAAC Azure Kubernetes Cluster
 
 ### Azure DevOps - Pipelines
+
+Overview:
+
+Object: Quick feedback
+
+Continuous Integration (Code Commit -> Unit Tests -> Code Quality -> Package -> Integration test)
+
+Continuous Deployment (Code Commit -> Unit Tests -> Integration Tests -> Package -> Deploy -> Automated tests)
+
+Continuous Delivery (Code Commit -> Unit Tests -> Integration Tests -> Package -> Deploy -> Automated tests -> testing Approval -> Deploy NEXT -> ...)
+
+Create continuos pipelines - Main tools: Jenkins or Azure DevOps
+
+Requirements: Azure Account = VS Code + Docker
+
+
 - Step 01 - Getting Started with Azure DevOps - First Project
 - Step 02 - Setting up Git Repo for Azure DevOps Pipeline
 - Step 03 - Creating your first Azure DevOps Pipeline
