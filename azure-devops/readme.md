@@ -288,9 +288,171 @@ Stage leve vriable:
      ...   
         
 - Step 09 - Understanding Azure DevOps Pipeline Variables
+
+Add variables:
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        stages:
+        - stage: Build
+          jobs:
+          - job: FirstJob
+            steps:
+            - bash: echo Build FirstJob
+            - bash: echo $(PipelineLevelVariable)
+            - bash: echo $(Build.BuildNumber)
+            - bash: echo $(Build.BuildId)
+            - bash: echo $(Build.SourceBranchName)
+            - bash: ls -R $(System.DefaultWorkingDirectory)
+            - bash: echo $(Build.ArtifactStaging)
+            
+Go to raw logs on  pipeline > jobs             
+    
 - Step 10 - Creating Azure DevOps Tasks for Copy Files and Publish Artifacts
+
+Creat the task using the lateral helping search tool:
+
+            trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        stages:
+        - stage: Build
+          jobs:
+          - job: FirstJob
+            steps:
+            - bash: echo Build FirstJob
+            - bash: echo $(PipelineLevelVariable)
+            - bash: echo $(Build.BuildNumber)
+            - bash: echo $(Build.BuildId)
+            - bash: echo $(Build.SourceBranchName)
+            - bash: echo $(System.DefaultWorkingDirectory)
+            - bash: ls -R $(System.DefaultWorkingDirectory)
+            - bash: echo $(Build.ArtifactStagingDirectory)
+            - bash: java -version
+            - bash: node --version
+            - bash: python --version
+            - bash: mvn -version
+            - bash: ls -R $(System.ArtifactStagingDirectory)
+            - task: CopyFiles@2
+              inputs:
+                SourceFolder: '$(System.DefaultWorkingDirectory)'
+                Contents: |
+                  **/*.yaml
+                  **/*.tf
+                TargetFolder: '$(Build.ArtifactStagingDirectory)'
+                
+Creating artifacts in ne stage to be used in other stage;
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        stages:
+        - stage: Build
+          jobs:
+          - job: FirstJob
+            steps:
+            - bash: echo Build FirstJob
+            - bash: echo $(PipelineLevelVariable)
+            - bash: echo $(Build.BuildNumber)
+            - bash: echo $(Build.BuildId)
+            - bash: echo $(Build.SourceBranchName)
+            - bash: echo $(System.DefaultWorkingDirectory)
+            - bash: ls -R $(System.DefaultWorkingDirectory)
+            - bash: echo $(Build.ArtifactStagingDirectory)
+            - bash: java -version
+            - bash: node --version
+            - bash: python --version
+            - bash: mvn -version
+            - bash: ls -R $(System.ArtifactStagingDirectory)
+            - task: CopyFiles@2
+              inputs:
+                SourceFolder: '$(System.DefaultWorkingDirectory)'
+                Contents: |
+                  **/*.yaml
+                  **/*.tf
+                TargetFolder: '$(Build.ArtifactStagingDirectory)'
+            - bash: ls -R $(Build.ArtifactStagingDirectory)
+            - task: PublishBuildArtifacts@1
+              inputs:
+                PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+                ArtifactName: 'drop'
+                publishLocation: 'Container'
+                
+   PS: Use azure help tool
+
 - Step 11 - Running Azure DevOps Jobs on Multiple Agents
+
+        trigger:
+        - main
+
+        strategy:
+          matrix:
+            linux:
+              operatingSystem: "ubuntu-latest"
+            mac:
+              operatingSystem: 'macos-latest'
+
+        pool:
+          vmImage: $(operatingSystem)
+
+        steps:
+        - script: echo Running on $(operatingSystem)
+          displayName: 'Run a one-line script'
+                  
 - Step 12 - Understanding Azure DevOps Deployment Jobs - Environments and Approvals
+
+Configuring dev and QA simple deploy in stage mode:
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        stages:
+        - stage: Build
+          jobs:
+          - job: BuildJob
+            steps:
+            - bash: echo "Do the buil"
+        - stage: DevDeploy
+          jobs:
+          - job: BuildJob
+            steps:
+            - bash: echo "Start Dev Deploy"
+          - deployment: DevDeployJob
+            environment: Dev
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                  - script: echo eploy to Dev
+        - stage: QaDeploy
+          jobs:
+          - job: BuildJob
+            steps:
+            - bash: echo "Start QA Deploy"
+          - deployment: QaDeployJob
+            environment: Qa
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                  - script: echo eploy to Qa
+
+Configure approvment requirement using environment > 3 dots > "Approval and checks"
+
+
 - Step 13 - Build and Push Docker Image in Azure DevOps - Part 1
 - Step 14 - Build and Push Docker Image in Azure DevOps - Part 2
 - Step 15 - Playing with Azure DevOps Releases
