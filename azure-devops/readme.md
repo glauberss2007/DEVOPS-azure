@@ -450,12 +450,68 @@ Configuring dev and QA simple deploy in stage mode:
                   steps:
                   - script: echo eploy to Qa
 
-Configure approvment requirement using environment > 3 dots > "Approval and checks"
+Configure approvement requirement using environment > 3 dots > "Approval and checks"
 
 
 - Step 13 - Build and Push Docker Image in Azure DevOps - Part 1
+
+Create a docker hub conection:
+
+        project settings > service conection > new service conection > search for docker registry > docker hub type > login/password
+        
+Creating a docker image project:
+
+        New Pipeline > Docker image > $(Build.SourcesDirectory)/Dockerfile (git hub ath for docker file)
+        
+File:
+
+        trigger:
+        - main
+
+        resources:
+        - repo: self
+
+        variables:
+          tag: '$(Build.BuildId)'
+
+        stages:
+        - stage: Build
+          displayName: Build image
+          jobs:  
+          - job: Build
+            displayName: Build
+            pool:
+              vmImage: 'ubuntu-latest'
+            steps:
+            - task: Docker@2
+              displayName: Build an image
+              inputs:
+                command: build
+                dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+                tags: |
+                  $(tag)
+
+Click on "settings" and select the repository to push:
+
+        Example: glaubersantos/currency-exchange-devops        
+
 - Step 14 - Build and Push Docker Image in Azure DevOps - Part 2
+
+Verify logs for details of build and push process
+
 - Step 15 - Playing with Azure DevOps Releases
+
+1 - Enaale one pipeline (that generate an artefact)
+2 - Releases > New > Add an Artifact
+3 - Releases > New > Add a stage
+4 - Releases > New > Add a task oon taht stage
+5 - Create the release
+
+PS: Agent job must work with compatibly SO
+
+6 - Clone the Dev stage and rename as QA
+7 - Add approve requirement
+8 - execute respective Pipeline directly from pipeline > run.
 
 ### CI, CD, IAAC with Kubernetes on Azure with Azure DevOps - Pipelines
 - Step 01 - Review Terraform Configuration for Azure Kubernetes Cluster Creation
