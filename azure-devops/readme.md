@@ -515,8 +515,123 @@ PS: Agent job must work with compatibly SO
 
 ### CI, CD, IAAC with Kubernetes on Azure with Azure DevOps - Pipelines
 - Step 01 - Review Terraform Configuration for Azure Kubernetes Cluster Creation
+    
+    Install Azure CLI
+
 - Step 02 - Setting up Client ID, Secret and Public Key for Azure Kubernetes Cluster Creation
+    
+    Login to AZ Client using powershell or cmd:
+            
+            az login
+
+    Get ID number then create the 
+    
+            az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/"IS Number"
+            
+    Store the informations provided:
+        
+          "appId": "xxxxxxxxxxxxxxxxx",
+          "displayName": "xxxxxxxxxxxxxxxxxxxxxxx",
+          "name": "xxxxxxxxxxxxxxxxxxxxxxxx",
+          "password": "xxxxxxxxxxxxxxxxxxxxx",
+          "tenant": "xxxxxxxxxxxxxxxxxxxxx"
+   
+    generating the ssh key:
+    
+        ssh-keygen -m PEM -t rsa -b 4096
+        
 - Step 03 - Creating Azure DevOps Pipeline for Azure Kubernetes Cluster IAAC 
+    
+    INto azure devops go to projects settings > service connections > New service conection > Azure Resource Manager
+    
+    Install terraform plugins availables on: 
+    
+        https://marketplace.visualstudio.com/items?itemName=ms-devlabs.custom-terraform-tasks
+
+    and
+    
+        https://marketplace.visualstudio.com/items?itemName=charleszipp.azure-pipelines-tasks-terraform
+        
+        
+    Them create a new pipeline using assistent for Terraform CLI:
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+        - script: echo K8S Terraform Azure!
+          displayName: 'Run a one-line script'
+        - task: TerraformCLI@0
+          inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+            backendType: 'azurerm'
+            backendServiceArm: 'azure-resource-manager-service-connection'
+            ensureBackend: true
+            backendAzureRmResourceGroupName: 'terraform-backend-rg'
+            backendAzureRmResourceGroupLocation: 'westeurope'
+            backendAzureRmStorageAccountName: 'storageacctdeboraz'
+            backendAzureRmContainerName: 'storageacctdeboracontainer'
+            backendAzureRmKey: 'kubernetes-dev.tfstate'
+            allowTelemetryCollection: true
+    
+Click on setting to add a comand option as below:
+    
+    -var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key$()
+    
+PS: $(XXXX) are the variables that we will configure:
+
+Click on varibles and create the cariables with the same name as inside $() previous sentence and use the information provided in previous step.
+
+For cleint_security mark teh safe data and for SSH key use library > secure files > adding the .pub file generated before.
+
+On .yaml file add the secure file using assistent.
+
+Inser  name to secure file:
+    
+    name: publickey
+
+And use that name into ssh_public_key$():
+
+    publickey.secureFilePath
+    
+The final file is:    
+
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+        - script: echo K8S Terraform Azure!
+          displayName: 'Run a one-line script'
+        - task: DownloadSecureFile@1
+          name: publickey
+          inputs:
+            secureFile: 'azure.pub'
+            retryCount: '5'
+        - task: TerraformCLI@0
+          inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+            commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key$(publickey.secureFilePath)'
+            backendType: 'azurerm'
+            backendServiceArm: 'azure-resource-manager-service-connection'
+            ensureBackend: true
+            backendAzureRmResourceGroupName: 'terraform-backend-rg'
+            backendAzureRmResourceGroupLocation: 'westeurope'
+            backendAzureRmStorageAccountName: 'storageacctdeboraz'
+            backendAzureRmContainerName: 'storageacctdeboracontainer'
+            backendAzureRmKey: 'kubernetes-dev.tfstate'
+            allowTelemetryCollection: true
+            
+            
+Then save and run, authorizing if necessary.  
+
 - Step 04 - Performing Terraform apply to create Azure Kubernetes Cluster in Azure DevOps
 - Step 05 - Connecting to Azure Kubernetes Cluster using Azure CLI
 - Step 06 - Creating Azure DevOps Pipeline for Deploying Microservice to Azure Kubernetes
