@@ -633,7 +633,48 @@ The final file is:
 Then save and run, authorizing if necessary.  
 
 - Step 04 - Performing Terraform apply to create Azure Kubernetes Cluster in Azure DevOps
+
+    Go to azure portal and confirm that the resource group was created.
+    
+    Back to the pipeline and edit the yaml file to apply as you can see below:
+    
+        trigger:
+        - main
+
+        pool:
+          vmImage: 'ubuntu-latest'
+
+        steps:
+        - script: echo K8S Terraform Azure!
+          displayName: 'Run a one-line script'
+        - task: DownloadSecureFile@1
+          name: publickey
+          inputs:
+            secureFile: 'azure.pub'
+            retryCount: '5'
+        - task: TerraformCLI@0
+          inputs:
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+            #commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key$(publickey.secureFilePath)'
+            backendType: 'azurerm'
+            backendServiceArm: 'azure-resource-manager-service-connection'
+            ensureBackend: true
+            backendAzureRmResourceGroupName: 'terraform-backend-rg'
+            backendAzureRmResourceGroupLocation: 'westeurope'
+            backendAzureRmStorageAccountName: 'storageacctdeboraz'
+            backendAzureRmContainerName: 'storageacctdeboracontainer'
+            backendAzureRmKey: 'kubernetes-dev.tfstate'
+            allowTelemetryCollection: true
+
+        - task: TerraformCLI@0
+          inputs:
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+            commandOptions: '-var client_id=$(client_id) -var client_secret=$(client_secret) -var ssh_public_key$(publickey.secureFilePath)'
+
 - Step 05 - Connecting to Azure Kubernetes Cluster using Azure CLI
+
 - Step 06 - Creating Azure DevOps Pipeline for Deploying Microservice to Azure Kubernetes
 - Step 07 - Creating V2 and Enable Build and Push of Docker Image - Part 1
 - Step 08 - Creating V2 and Enable Build and Push of Docker Image - Part 2
