@@ -675,10 +675,107 @@ Then save and run, authorizing if necessary.
 
 - Step 05 - Connecting to Azure Kubernetes Cluster using Azure CLI
 
+    Change the number of nodes to 2 and confirm unsing devops console that job runs after commit.
+    
+    To connect into K8S using console typw az login and then:
+        
+        az aks get-credentials --name k8stest_dev --resource-group kubernetes_dev
+        
+    Now you can directly use kubectl comands         
+    
 - Step 06 - Creating Azure DevOps Pipeline for Deploying Microservice to Azure Kubernetes
+
+    Create an kubertetes service conection
+    
+    Create a new pipeline to be configured as below:
+    
+            # Stage 1
+            # Build docker image
+            # Publishe to KBS files
+
+            # Stage 2
+            # Download KBS file
+            # Deploy to K8S Cluster
+
+    Buil docker imagem as below:
+    
+        trigger:
+        - master
+
+        resources:
+        - repo: self
+
+        variables:
+          tag: '$(Build.BuildId)'
+
+        stages:
+        - stage: Build
+          displayName: Build image
+          jobs:  
+          - job: Build
+            displayName: Build
+            pool:
+              vmImage: 'ubuntu-latest'
+            steps:
+            - task: Docker@2
+              inputs:
+                containerRegistry: 'in28min-docker-hub'
+                repository: 'in28min/currency-exchange-devops'
+                command: 'buildAndPush'
+                Dockerfile: '**/Dockerfile'
+                tags: '$(tag)'
+    
+    Now add an artifacts using assistance "Publish build artifacts"
+    
+      - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'manifest'
+        publishLocation: 'Container'
+    
+    Copy previous step mand edit it to deploy image
+            
+          - stage: Deploy
+          displayName: Deploy image
+          jobs:  
+          - job: Deploy
+            displayName: Deploy
+            pool:
+              vmImage: 'ubuntu-latest'
+            steps:
+
+     In teh first step "download pipeline artifact":
+     
+          - task: DownloadPipelineArtifact@2
+          inputs:
+            buildType: 'current'
+            artifactName: 'manifests'
+            itemPattern: '**/*.yaml'
+            targetPath: '$(System.ArtifactsDirectory)'
+
+    And then "deploy to kubernetes":
+    
+          - task: KubernetesManifest@0
+          inputs:
+            action: 'deploy'
+            kubernetesServiceConnection: 'azure-kubernetes-connection'
+            namespace: 'default'
+            manifests: $(System.ArtifactsDirectory)/deployment.yaml'
+            containers: 'in28min/currency-exchange-devops:${tag}'
+
 - Step 07 - Creating V2 and Enable Build and Push of Docker Image - Part 1
 - Step 08 - Creating V2 and Enable Build and Push of Docker Image - Part 2
+
 - Step 09 - Performing Terraform destroy to delete Azure Kubernetes Cluster in Azure DevOps
+    
+    Just add follow lines to destroy the environment:
+    
+        - task: TerraformCLI@0
+          inputs:
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/configuration/iaac/azure/kubernetes'
+            environmentServiceName: 'azure-resource-manager-service-connection'
+
 - Step 10 - Quick Review of Terraform destroy
 
 ### CI, CD, IAAC with Kubernetes on AWS with Azure DevOps - Pipelines
